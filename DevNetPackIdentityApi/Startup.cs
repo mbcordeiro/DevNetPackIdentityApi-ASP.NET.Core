@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NetDevPack.Identity;
+using NetDevPack.Identity.Jwt;
 
 namespace DevNetPackIdentityApi
 {
@@ -25,6 +27,9 @@ namespace DevNetPackIdentityApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddIdentityEntityFrameworkContextConfiguration(Configuration, GetType().Namespace, "DefaultConnection");
+            services.AddJwtConfiguration(Configuration, "AppSettings");
+            services.AddIdentityConfiguration();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
