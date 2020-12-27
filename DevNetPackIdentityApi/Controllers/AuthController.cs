@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NetDevPack.Identity.Jwt;
+using NetDevPack.Identity.Jwt.Model;
 using NetDevPack.Identity.Model;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace DevNetPackIdentityApi.Controllers
 
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok(GetUserResponse(user.Email));
             }
 
             return BadRequest(result.Errors);
@@ -58,7 +59,7 @@ namespace DevNetPackIdentityApi.Controllers
 
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok(GetFullJwt(loginUser.Email));
             }
 
             if (result.IsLockedOut)
@@ -67,6 +68,30 @@ namespace DevNetPackIdentityApi.Controllers
             }
 
             return BadRequest("Incorrent user or password");
+        }
+
+        public string GetFullJwt(string email)
+        {
+            return new JwtBuilder()
+                .WithUserManager(_userManager)
+                .WithJwtSettings(_appJwtSettings)
+                .WithEmail(email)
+                .WithJwtClaims()
+                .WithUserClaims()
+                .WithUserRoles()
+                .BuildToken();
+        }
+
+        public UserResponse GetUserResponse(string email)
+        {
+            return new JwtBuilder()
+                .WithUserManager(_userManager)
+                .WithJwtSettings(_appJwtSettings)
+                .WithEmail(email)
+                .WithJwtClaims()
+                .WithUserClaims()
+                .WithUserRoles()
+                .BuildUserResponse() as UserResponse;
         }
     }
 }
